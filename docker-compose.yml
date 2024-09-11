@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+  
+  web:
+    build: .
+    container_name: web_service
+    environment:
+      - MONGO_URI=mongo://root:example@mongo:27017/?authSource=admin
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+    volumes:
+      - ./uploads:/app/uploads 
+  
+  back:
+    build: ./backend
+    container_name: back_service
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo
+    volumes:
+      - ./uploads:/usr/src/app/uploads
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend_service
+    ports:
+      - "3000:80" 
+    depends_on:
+      - back
+    volumes:
+      - ./frontend/build:/usr/share/nginx/html
+    restart: always
+
+
+volumes:
+  mongo-data:
+    driver: local

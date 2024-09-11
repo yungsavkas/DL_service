@@ -1,0 +1,12 @@
+flask
+numpy==1.23.5
+opencv-python
+torch
+torchvision
+Pillow
+pandas
+requests
+ultralytics
+flask-socketio
+eventlet
+pymongo
